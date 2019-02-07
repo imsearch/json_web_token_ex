@@ -40,14 +40,7 @@ defmodule JsonWebToken.Algorithm.Rsa do
       true
   """
   def verify?(mac, sha_bits, public_key, signing_input) do
-    Logger.warn("[RSA VERIFY]")
-    Logger.warn("mac: #{inspect mac}")
-    Logger.warn("sha_bits: #{inspect sha_bits}")
-    Logger.warn("public_key: #{inspect public_key}")
-    Logger.warn("signing_input: #{inspect signing_input}")
-    Logger.warn("validate_params: #{inspect validate_params(sha_bits, public_key)}")
     validate_params(sha_bits, public_key)
-    Logger.warn("crypt_verify: #{inspect :crypto.verify(:rsa, sha_bits, signing_input, mac, public_key)}")
     :crypto.verify(:rsa, sha_bits, signing_input, mac, public_key)
   end
 

@@ -41,12 +41,12 @@ defmodule JsonWebToken.Jws do
   end
 
   defp algorithm(header) do
-    Logger.info("HEADER #{inspect header}")
+    # Logger.info("HEADER #{inspect header}")
     if header[:alg] == nil do
-      Logger.info("NO ALG HERE 1 #{inspect header[:kty]}")
+      # Logger.info("NO ALG HERE 1 #{inspect header[:kty]}")
       "RS256"
     else
-      Logger.info("NO ALG HERE 2")
+      # Logger.info("NO ALG HERE 2")
       Util.validate_present(header[:alg])
     end
   end
@@ -83,9 +83,7 @@ defmodule JsonWebToken.Jws do
       {:ok, "eyJhbGciOiJIUzI1NiJ9.cGF5bG9hZA.uVTaOdyzp_f4mT_hfzU8LnCzdmlVC4t2itHDEYUZym4"}
   """
   def verify(jws, algorithm, key \\ nil) do
-    Logger.warn("Now can we log?")
     validate_alg_matched(jws, algorithm)
-    Logger.warn("Algorithm matched")
     verified(jws, algorithm, key)
   end
 
@@ -111,7 +109,6 @@ defmodule JsonWebToken.Jws do
 
   defp verified(jws, "none", _), do: {:ok, jws}
   defp verified(jws, algorithm, key) do
-    Logger.warn("All the things jws: #{inspect jws} alg: #{inspect algorithm} key: #{inspect key} parts_list: #{inspect parts_list(jws)}")
     verified_jws(jws, signature_verify?(parts_list(jws), algorithm, key))
   end
 

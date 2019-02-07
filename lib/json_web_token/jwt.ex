@@ -86,7 +86,7 @@ defmodule JsonWebToken.Jwt do
   see http://tools.ietf.org/html/rfc7519#section-7.2
   """
   def verify(jwt, options) do
-    payload(Jws.verify jwt, algorithm(options), options[:key])
+    payload(Jws.verify(jwt, algorithm(options), options[:key]))
   end
 
   defp payload({:error, "invalid"}), do: {:error, "invalid"}
