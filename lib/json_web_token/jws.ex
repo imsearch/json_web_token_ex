@@ -85,6 +85,7 @@ defmodule JsonWebToken.Jws do
   def verify(jws, algorithm, key \\ nil) do
     Logger.warn("Now can we log?")
     validate_alg_matched(jws, algorithm)
+    Logger.warn("Algorithm matched")
     verified(jws, algorithm, key)
   end
 
@@ -110,6 +111,7 @@ defmodule JsonWebToken.Jws do
 
   defp verified(jws, "none", _), do: {:ok, jws}
   defp verified(jws, algorithm, key) do
+    Logger.warn("All the things jws: #{inspect jws} alg: #{inspect algorithm} key: #{inspect key} parts_list: #{inspect parts_list(jws)}")
     verified_jws(jws, signature_verify?(parts_list(jws), algorithm, key))
   end
 
