@@ -8,6 +8,8 @@ defmodule JsonWebToken.Jws do
   alias JsonWebToken.Jwa
   alias JsonWebToken.Util
 
+  require Logger
+
   @signed_message_parts 3
 
   @doc """
@@ -39,7 +41,14 @@ defmodule JsonWebToken.Jws do
   end
 
   defp algorithm(header) do
-    Util.validate_present(header[:alg])
+    Logger.info("HEADER #{inspect header}")
+    if header[:alg] == nil do
+      Logger.info("NO ALG HERE 1 #{inspect header[:kty]}")
+      "RS256"
+    else
+      Logger.info("NO ALG HERE 2")
+      Util.validate_present(header[:alg])
+    end
   end
 
   defp signing_input(header, payload) do
@@ -74,6 +83,7 @@ defmodule JsonWebToken.Jws do
       {:ok, "eyJhbGciOiJIUzI1NiJ9.cGF5bG9hZA.uVTaOdyzp_f4mT_hfzU8LnCzdmlVC4t2itHDEYUZym4"}
   """
   def verify(jws, algorithm, key \\ nil) do
+    Logger.warn("Now can we log?")
     validate_alg_matched(jws, algorithm)
     verified(jws, algorithm, key)
   end
