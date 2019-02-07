@@ -42,21 +42,10 @@ defmodule JsonWebToken.Algorithm.Rsa do
     :crypto.verify(:rsa, sha_bits, signing_input, mac, public_key)
   end
 
-  @doc """
-  RSA key modulus, n
- 
-  Note: Erlang OTP 20 moved `the mpint/1` function from `:crypto` to `:ssh_bits` module.
-  To deal with both OTP versions, a compile time OTP version check is performed.
-  Based on the version the modulus function is defined with the appropiate module.
-  """
-  otp_vsn = :erlang.system_info(:otp_release)
-  |> to_string
-  |> String.to_integer
- 
-  if otp_vsn > 19 do
-    def modulus(key), do: :ssh_bits.mpint(Enum.at key, 1)
-  else
-    def modulus(key), do: :crypto.mpint(Enum.at key, 1)
+  @doc "RSA key modulus, n"
+  def modulus([_exponent, modulus | _rest]) do
+    bytes_list = Integer.digits(modulus, 256)
+    :erlang.list_to_binary(bytes_list)
   end
 
   defp validate_params(sha_bits, key) do
@@ -65,9 +54,14 @@ defmodule JsonWebToken.Algorithm.Rsa do
   end
 
   # http://tools.ietf.org/html/rfc7518#section-3.3
-  defp validate_key_size(a_key) do
-    key = Util.validate_present(a_key)
-    weak_key(bit_size(modulus key) < @key_bits_min)
+  defp validate_key_size(key) when is_list(key) do
+    key = Util.validate_present(key) |> modulus()
+    weak_key(bit_size(key) < @key_bits_min)
+  end
+
+  defp validate_key_size(key) do
+    key = Util.validate_present(key)
+    weak_key(bit_size(key) < @key_bits_min)
   end
 
   defp weak_key(true), do: raise "RSA modulus too short"
